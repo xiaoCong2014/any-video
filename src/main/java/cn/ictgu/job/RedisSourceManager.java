@@ -33,6 +33,28 @@ public class RedisSourceManager {
   }
 
   /**
+   *  保存信息到 Redis
+   */
+  void save( String key, String value ){
+    stringRedisTemplate.opsForValue().set( key, value );
+  }
+
+  /**
+   *  删除视频信息
+   *  @param key  List<Video> videos 的key
+   */
+  void deleteVideos(String key){
+    stringRedisTemplate.delete( key );
+  }
+
+  /**
+   *  修改
+   */
+  void update( String key, String value ){
+    stringRedisTemplate.opsForValue().set( key, value );
+  }
+
+  /**
    *  得到视频信息
    */
   public List<Video> getVideosByKeyAndTag(String key, String tag){

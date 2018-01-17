@@ -1,5 +1,6 @@
 package cn.ictgu.controller;
 
+import cn.ictgu.bean.response.Article;
 import cn.ictgu.bean.response.Video;
 import cn.ictgu.job.RedisSourceManager;
 import cn.ictgu.parse.search.VideoSearch;
@@ -8,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -24,6 +26,28 @@ public class IndexController {
     private final RedisSourceManager redisSourceManager;
 
     private final VideoSearch videoSearch;
+
+    /**
+     *
+     */
+    @GetMapping("/test")
+    @ResponseBody
+    public String test(HttpServletRequest request) {
+        return "test";
+    }
+
+    /**
+     *
+     */
+    @GetMapping("/testArticle")
+    @ResponseBody
+    public Article testArticle() {
+        Article article = new Article();
+
+        article.setAuthor("1");
+        article.setContent("11");
+        return article;
+    }
 
     /**
      * 首页
@@ -84,3 +108,4 @@ public class IndexController {
 
 
 }
+

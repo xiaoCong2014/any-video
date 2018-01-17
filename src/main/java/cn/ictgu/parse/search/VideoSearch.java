@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 视频搜索
+ * 视频搜索 工具类
  */
 @Component
 @Log4j2

@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,19 +22,38 @@ import java.util.List;
 @AllArgsConstructor
 public class QqCrawler {
 
+    private final StringRedisTemplate stringRedisTemplate;
+
+    private static final String TAG = "QQ";
+
+    private final RedisSourceManager redisSourceManager;
+
     private static final String HOME_PAGE_PC = "https://v.qq.com/";
     private static final String HOME_PAGE_PHONE_TV = "http://v.qq.com/x/list/tv";
     private static final String HOME_PAGE_PHONE_MOVIE = "http://v.qq.com/x/list/movie";
     private static final String HOME_PAGE_PHONE_CARTOON = "http://v.qq.com/x/list/cartoon";
     private static final String HOME_PAGE_PHONE_RECOMMEND = "http://v.qq.com/x/list/variety";
-    private static final String TAG = "QQ";
 
-    private final RedisSourceManager redisSourceManager;
+    /**
+     * Baidu
+     */
+    private static final String HOME_PAGE_BAI_DU = "https://www.baidu.com/s?ie=UTF-8&wd=%E5%8D%9A%E5%AE%A2%E5%9B%AD";
+
+    /**
+     * bilibili
+     */
+    private static final String BILIBILI = "http://www.bilibili.com/index.html";
+
+    /**
+     * bilibili 的主页的 key
+     */
+    private static final String KEY_BILIBILI_HOME = "bilibili.com";
+
 
     /**
      * 每隔1小时，爬腾讯视频官网信息
      */
-    @Scheduled(fixedRate = 60 * 60 * 1000)
+    //@Scheduled(fixedRate = 60 * 60 * 1000)
     public void start() {
         Document pcDocument = JsoupUtils.getDocWithPC(HOME_PAGE_PC);
         Document phoneTVDocument = JsoupUtils.getDocWithPC(HOME_PAGE_PHONE_TV);
@@ -46,6 +65,93 @@ public class QqCrawler {
         saveTVsToRedis(phoneTVDocument);
         saveMoviesToRedis(phoneMovieDocument);
         saveCartoonsToRedis(phoneCartoonDocument);
+    }
+
+    //@Scheduled(fixedRate = 15000)
+    public void startBilibili() {
+
+        Document docBilibili = JsoupUtils.getDocWithPC(BILIBILI);
+
+        String text = docBilibili.text();
+//        System.out.println(text);
+
+
+        Elements bili_douga_Element = docBilibili.select("#bili_douga");
+
+        Elements textElement = docBilibili.select("#bili_douga > div > div > div.zone-title > div > a.name");
+
+
+
+//        Elements ulElementArray = docBilibili.select("#ranking_douga > div > ul.rank-list.hot-list");
+//
+//        if( ulElementArray != null && ulElementArray.size() > 0 ){
+//            for ( Element liElement : ulElementArray ) {
+////                stringRedisTemplate.opsForValue().set( key, value );
+//            }
+//        }
+
+    }
+
+    //@Scheduled(fixedRate = 15000)
+    public void startBaidu() {
+
+        Document docBaidu = JsoupUtils.getDocWithPC(HOME_PAGE_BAI_DU);
+
+//        String text = docBaidu.text();
+//        System.out.println(text);
+
+
+        Elements su_ElementArray = docBaidu.select("#su");
+
+        String outString = su_ElementArray.get(0).attributes().get("value");
+
+        System.out.println( outString );
+
+    }
+
+//    @Scheduled(fixedRate = 5000)
+    public void startBaidu2() {
+
+        Document docBaidu = JsoupUtils.getDocWithPC(HOME_PAGE_BAI_DU);
+
+//        Elements a_ElementArray = docBaidu.select("#con-ar > div:nth-child(1) > div > div > div.opr-recommends-merge-panel.opr-recommends-merge-mbGap");
+
+        //第一个div
+//        Element element = a_ElementArray.get(0).children().get(0);
+
+//        String outString = a_ElementArray.get(0).attributes().get("value");
+
+
+
+//        System.out.println( outString );
+
+
+//        System.out.println( element );
+
+        //Element con_ar = docBaidu.select("#con-ar").get(0).child(0);
+
+        Elements con_ar_array = docBaidu.select("#con-ar");
+
+
+        Element con_ar = con_ar_array.get(0).child(0);
+
+
+
+        Element cr_content = con_ar.child(0);
+
+        //cr_content.attribute
+//        Element element1 = cr_content.child(1).child(1).child(0);
+
+
+        Element opr_recommends_merge_content = cr_content.child(1);
+
+
+        Element opr_recommends_merge_panel__opr_recommends_merge_mbGap = opr_recommends_merge_content.child(1).child(0);
+
+        Element element1 = opr_recommends_merge_panel__opr_recommends_merge_mbGap.child(0);
+
+        int a = 0;
+
     }
 
     /**
@@ -117,3 +223,7 @@ public class QqCrawler {
     }
 
 }
+
+//        String key = KEY_BILIBILI_HOME;
+//        stringRedisTemplate.opsForValue().set( key, text );
+//redisSourceManager.save( KEY_BILIBILI_HOME , text );
